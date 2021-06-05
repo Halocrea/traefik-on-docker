@@ -18,18 +18,18 @@ chmod 600 acme.json
 ```
 
 Edit the `docker-compose.yml`:
-- lines 23 and 28: replace `example.domain.com` with the DN you want to use for Traefik's dashboard
-- line 24: replace USER:PASSWORD with the proper user and password hash you want when trying to access the dashboard, to do that, follow the steps hereafter: 
+- **lines 23 and 28**: replace `example.domain.com` with the DN you want to use for Traefik's dashboard
+- **line 24**: replace `USER:PASSWORD` with the proper user and password hash you want when trying to access the dashboard, to do that, follow the steps hereafter: 
     - First off, you will need a user who can `sudo`.
     - then `sudo apt install apache2-utils`.
     - then `echo $(htpasswd -nb <USER> <PASSWORD>) | sed -e s/\\$/\\$\\$/g` replacing `<USER>` and `<PASSWORD>` by a username and password.
     - copy the output of this last command.
     - login as the `docker` user again.
-    - Past the copied value in the docker-compose file to replace the USER:PASSWORD line 24.
+    - Paste the copied value in the docker-compose file to replace the `USER:PASSWORD` line 24.
 
 
 Now edit the file `data/traefik.yml`:
-- line 18, replace `your@email.com` by a valid email address of yours.
+- **line 18**, replace `your@email.com` by a valid email address of yours.
 Save and quit.
 
 Now, we must create the `proxy` docker network and run this all:
@@ -43,14 +43,14 @@ docker-compose up -d
 ``` 
 
 # Setting a website to be proxified by Traefik
-At the root of your project, you must have a Dockerfile setting how the project will be built into a Docker image.
+At the root of your project, you must have a `Dockerfile` setting how the project will be built into a Docker image.
 Then, create a `docker-compose.yml` file with this content:
 ```YAML
 version: "3"
 
 services:
   proxifiedcontainer:
-    image: <name of your image>
+    build: .
     container_name: "<name of your container>"
     restart: always
     ports:
@@ -77,17 +77,15 @@ networks:
     external: false
 ```
 **Important values to adjust:**
-- line 5: you must provide the name of your custom image
-- line 6: you can name the container the way you want
-- lines 9 **and 20**: replace `<port>` by the port your container exposes stuff _but neither 80 nor 443_ (Traefik is already using those for incoming traffic). For example, for a classical website, it would be `8080:8080`, or for a typical Node app it would be `3000:3000`. If you try one of these and it says that the port is already in use, it may be because another container already uses it, so you have to expose (in your project, in the `Dockerfile` and here) another port.
+- **line 5**: you must provide the name of your custom image
+- **line 6**: you can name the container the way you want
+- **lines 9 *and 20**: replace `<port>` by the port your container exposes stuff _but neither 80 nor 443_ (Traefik is already using those for incoming traffic). For example, for a classical website, it would be `8080:8080`, or for a typical Node app it would be `3000:3000`. If you try one of these and it says that the port is already in use, it may be because another container already uses it, so you have to expose (in your project, in the `Dockerfile` and here) another port.
 - lines 13 and 17: replace `sample.subdomain.com` by your own subdomain. 
 - you can replace all occurences of `proxifiedcontainer` by whatever you want, however it should be unique (not something another service/project would use anywhere else). 
 
 Once it's done:
 ```sh
 cd /home/docker/<your-project>/ 
-
-docker build . -t <name of your image>
 
 docker-compose up -d
 ```
