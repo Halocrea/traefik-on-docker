@@ -1,11 +1,10 @@
 # traefik-on-docker
-infos and config files on how to setup traefik on the server and how to use it
+Infos and config files on how to setup traefik on your server and how to use it
 
 # Notice
-This is meant for Docker on Linux.
-Also requires docker-compose to be installed.
-If some of the commands below return an error about missing permissions, then you do it wrong (except if it explicitely says you need special permissions, and in that case, RTFM); it should be done in a folder where the user you currently use owns the rights.
-On the VPS, all this is intended to be done by the user `docker` into his home directory, `/home/docker`.
+This is meant for Docker on Linux, and also requires docker-compose to be installed.
+If some of the commands below return an error about missing permissions, then you do it wrong (except if it explicitely says you need special permissions, and in that case, RTFM); it should be done in a folder the user you currently use owns.
+In our typical install, all this is intended to be done by the user `docker` into their home directory, `/home/docker`.
 
 # Setup 
 ```sh
@@ -17,7 +16,7 @@ touch data/acme.json
 chmod 600 acme.json
 ```
 
-Edit the `docker-compose.yml`:
+Edit the `docker-compose.yml` file:
 - **lines 23 and 28**: replace `example.domain.com` with the DN you want to use for Traefik's dashboard
 - **line 24**: replace `USER:PASSWORD` with the proper user and password hash you want when trying to access the dashboard, to do that, follow the steps hereafter: 
     - First off, you will need a user who can `sudo`.
@@ -32,7 +31,7 @@ Now edit the file `data/traefik.yml`:
 - **line 18**, replace `your@email.com` by a valid email address of yours.
 Save and quit.
 
-Now, we must create the `proxy` docker network and run this all:
+Now, create the `proxy` docker network and run this:
 ```sh
 
 docker network create proxy
@@ -43,7 +42,7 @@ docker-compose up -d
 ``` 
 
 # Setting a website to be proxified by Traefik
-At the root of your project, you must have a `Dockerfile` setting how the project will be built into a Docker image.
+At the root of your project, you must have a `Dockerfile` setting up how the project will be built into a Docker image.
 Then, create a `docker-compose.yml` file with this content:
 ```YAML
 version: "3"
