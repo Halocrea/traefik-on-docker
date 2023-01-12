@@ -6,6 +6,8 @@ entryPoints:
     address: ":80"
   https:
     address: ":443"
+  rtmpsecure:
+    address: ":1935"
 
 providers:
   docker:
