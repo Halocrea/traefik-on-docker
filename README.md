@@ -52,8 +52,6 @@ services:
     build: .
     container_name: "<name of your container>"
     restart: always
-    ports:
-      - <port>:<port>
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.proxifiedcontainer.entrypoints=http"
@@ -64,7 +62,9 @@ services:
       - "traefik.http.routers.proxifiedcontainer-secure.rule=Host(`sample.subdomain.com`)"
       - "traefik.http.routers.proxifiedcontainer-secure.tls=true"
       - "traefik.http.routers.proxifiedcontainer-secure.tls.certresolver=http"
+      - "traefik.http.routers.backoffice-secure.service=proxifiedcontainer"
       - "traefik.http.services.proxifiedcontainer.loadbalancer.server.port=<port>"
+      - "traefik.docker.network=proxy"
     networks:
       - internal
       - proxy
