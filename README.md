@@ -54,16 +54,32 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.proxifiedcontainer.entrypoints=http"
-      - "traefik.http.routers.proxifiedcontainer.rule=Host(`sample.subdomain.com`)"
-      - "traefik.http.middlewares.proxifiedcontainer-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.proxifiedcontainer.middlewares=proxifiedcontainer-https-redirect"
-      - "traefik.http.routers.proxifiedcontainer-secure.entrypoints=https"
-      - "traefik.http.routers.proxifiedcontainer-secure.rule=Host(`sample.subdomain.com`)"
-      - "traefik.http.routers.proxifiedcontainer-secure.tls=true"
-      - "traefik.http.routers.proxifiedcontainer-secure.tls.certresolver=http"
-      - "traefik.http.routers.backoffice-secure.service=proxifiedcontainer"
-      - "traefik.http.services.proxifiedcontainer.loadbalancer.server.port=<port>"
+
+      # HTTP router (redirects to HTTPS)
+      - "traefik.http.routers.app.entrypoints=http"
+      - "traefik.http.routers.app.rule=Host(`sample.subdomain.com`)"
+      - "traefik.http.routers.app.middlewares=app-https-redirect"
+      
+      # HTTPS redirect middleware
+      - "traefik.http.middlewares.app-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.app-https-redirect.redirectscheme.permanent=true"
+      
+      # HTTPS router (serves the actual app)
+      - "traefik.http.routers.app-secure.entrypoints=https"
+      - "traefik.http.routers.app-secure.rule=Host(`sample.subdomain.com`)"
+      - "traefik.http.routers.app-secure.tls=true"
+      - "traefik.http.routers.app-secure.tls.certresolver=http"
+      - "traefik.http.routers.app-secure.service=app"
+      - "traefik.http.routers.app-secure.middlewares=app-security-headers"
+      
+      # Security headers middleware
+      - "traefik.http.middlewares.app-security-headers.headers.stsincludeSubdomains=false"
+      - "traefik.http.middlewares.app-security-headers.headers.stspreload=true"
+      - "traefik.http.middlewares.app-security-headers.headers.stsseconds=31536000"
+      - "traefik.http.middlewares.app-security-headers.headers.isdevelopment=false"
+      
+      # Service configuration
+      - "traefik.http.services.app.loadbalancer.server.port=<port>"
       - "traefik.docker.network=proxy"
     networks:
       - internal
