@@ -17,18 +17,18 @@ chmod 600 acme.json
 ```
 
 Edit the `docker-compose.yml` file:
-- **lines 23 and 28**: replace `example.domain.com` with the DN you want to use for Traefik's dashboard
-- **line 24**: replace `USER:PASSWORD` with the proper user and password hash you want when trying to access the dashboard, to do that, follow the steps hereafter: 
+- **lines 21 and 26**: replace `example.domain.com` with the DN you want to use for Traefik's dashboard
+- **line 22**: replace `USER:PASSWORD` with the proper user and password hash you want when trying to access the dashboard, to do that, follow the steps hereafter: 
     - First off, you will need a user who can `sudo`.
     - then `sudo apt install apache2-utils`.
     - then `echo $(htpasswd -nb <USER> <PASSWORD>) | sed -e s/\\$/\\$\\$/g` replacing `<USER>` and `<PASSWORD>` by a username and password.
     - copy the output of this last command.
     - login as the `docker` user again.
-    - Paste the copied value in the docker-compose file to replace the `USER:PASSWORD` line 24.
+    - Paste the copied value in the docker-compose file to replace the `USER:PASSWORD` line 22.
 
 
 Now edit the file `data/traefik.yml`:
-- **line 18**, replace `your@email.com` by a valid email address of yours.
+- **line 20**, replace `your@email.com` by a valid email address of yours.
 Save and quit.
 
 Now, create the `proxy` docker network and run this:
@@ -57,7 +57,7 @@ services:
 
       # HTTP router (redirects to HTTPS)
       - "traefik.http.routers.app.entrypoints=http"
-      - "traefik.http.routers.app.rule=Host(`sample.subdomain.com`)"
+      - 'traefik.http.routers.app.rule=Host("sample.subdomain.com")'
       - "traefik.http.routers.app.middlewares=app-https-redirect"
       
       # HTTPS redirect middleware
@@ -66,7 +66,7 @@ services:
       
       # HTTPS router (serves the actual app)
       - "traefik.http.routers.app-secure.entrypoints=https"
-      - "traefik.http.routers.app-secure.rule=Host(`sample.subdomain.com`)"
+      - 'traefik.http.routers.app-secure.rule=Host("sample.subdomain.com")'
       - "traefik.http.routers.app-secure.tls=true"
       - "traefik.http.routers.app-secure.tls.certresolver=http"
       - "traefik.http.routers.app-secure.service=app"
